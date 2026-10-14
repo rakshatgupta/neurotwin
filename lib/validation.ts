@@ -1,0 +1,28 @@
+import type { Checkin } from './types';
+export class InputError extends Error {}
+export function record(input: unknown): Record<string,unknown> {
+  if(!input || typeof input!=='object' || Array.isArray(input)) throw new InputError('Invalid request.');
+  return input as Record<string,unknown>;
+}
+export function number(value:unknown,min:number,max:number,name:string) {
+  if(typeof value!=='number'||!Number.isFinite(value)||value<min||value>max) throw new InputError(`${name} must be between ${min} and ${max}.`);
+  return value;
+}
+export function checkin(input:unknown):Checkin {
+  const v=record(input);
+  const date=v.on_date;
+  if(typeof date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(Date.parse(date))||new Date(date).toISOString().slice(0,10)!==date||date>new Date(Date.now()+86400000).toISOString().slice(0,10)||date<'2000-01-01') throw new InputError('Use a valid date from 2000 through today.');
+  if(!['Clear','Balanced','Foggy','Tired'].includes(String(v.mood)))throw new InputError('Select a valid mood.');
+  return {on_date:date,sleep:number(v.sleep,0,24,'Sleep'),activity:number(v.activity,0,1440,'Activity'),stress:number(v.stress,0,10,'Stress'),mood:v.mood as string,source:v.source==='csv'?'csv':'manual'};
+}
+export function assessment(input:unknown) {const v=record(input);const starts=number(v.false_starts,0,100,'False starts');if(!Number.isInteger(starts))throw new InputError('False starts must be an integer.');return {reaction_ms:number(v.reaction_ms,80,10000,'Reaction time'),memory_accuracy:number(v.memory_accuracy,0,100,'Recall accuracy'),false_starts:starts};}
+export function voice(input:unknown) {const v=record(input);return {duration_ms:number(v.duration_ms,3000,61000,'Recording duration'),rms_mean:number(v.rms_mean,0,1,'Audio level')};}
+export function preferences(input:unknown) {const v=record(input);for(const key of ['storage_consent','ai_consent','voice_consent'])if(typeof v[key]!=='boolean')throw new InputError('Consent settings must be true or false.');if(!v.storage_consent&&(v.ai_consent||v.voice_consent))throw new InputError('Enable storage before optional processing.');return {storage_consent:v.storage_consent as boolean,ai_consent:v.ai_consent as boolean,voice_consent:v.voice_consent as boolean};}
+export function csv(text:string) {
+  if(text.length>100000)throw new InputError('CSV is too large (maximum 100 KB).');
+  const lines=text.replace(/^\uFEFF/,'').trim().split(/\r?\n/);
+  if(lines.length<2||lines.length>366)throw new InputError('Import 1–365 daily rows.');
+  if(lines.shift()?.trim()!=='date,sleep,activity,stress,mood')throw new InputError('Use the header: date,sleep,activity,stress,mood');
+  const dates=new Set<string>();
+  return lines.map((line,i)=>{const values=line.split(',').map(s=>s.trim());if(values.length!==5||values.slice(1,4).some(s=>!s))throw new InputError(`Invalid row ${i+2}.`);const r=checkin({on_date:values[0],sleep:Number(values[1]),activity:Number(values[2]),stress:Number(values[3]),mood:values[4],source:'csv'});if(dates.has(r.on_date))throw new InputError('Each date must appear only once.');dates.add(r.on_date);return r;});
+}

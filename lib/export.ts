@@ -1,0 +1,2 @@
+import type {SupabaseClient} from '@supabase/supabase-js';
+export async function exportRows(db:SupabaseClient,table:string,userId:string){const rows:Record<string,unknown>[]=[];for(let page=0;page<40;page++){const {data,error}=await db.from(table).select('*').eq('user_id',userId).order('id',{ascending:true}).range(page*500,page*500+499);if(error)throw error;rows.push(...(data||[]));if((data||[]).length<500)return rows;}throw new Error('Export exceeds the application limit. Contact the project owner for a database export.');}

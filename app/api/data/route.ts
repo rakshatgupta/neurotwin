@@ -1,0 +1,29 @@
+import {authenticate,json,failure,body,requireConsent,HttpError} from '../../../lib/server';
+import {checkin,assessment,voice,csv,record,preferences} from '../../../lib/validation';
+import {buildTwin} from '../../../lib/analytics';
+export const dynamic='force-dynamic';
+export async function GET(request:Request){try{
+ const {db,user}=await authenticate(request);
+ const results=await Promise.all([
+  db.from('checkins').select('id,on_date,sleep,activity,stress,mood,source').eq('user_id',user.id).order('on_date',{ascending:false}).limit(365),
+  db.from('assessments').select('id,created_at,reaction_ms,memory_accuracy,false_starts').eq('user_id',user.id).order('created_at',{ascending:false}).limit(100),
+  db.from('voices').select('id,created_at,duration_ms,rms_mean').eq('user_id',user.id).order('created_at',{ascending:false}).limit(100),
+  db.from('preferences').select('storage_consent,ai_consent,voice_consent').eq('user_id',user.id).maybeSingle(),
+  db.from('insights').select('id,content,created_at').eq('user_id',user.id).order('created_at',{ascending:false}).limit(20),
+ ]);if(results.some(r=>r.error))throw new Error('Database query failed');
+ const data={checkins:(results[0].data||[]).reverse(),assessments:(results[1].data||[]).reverse(),voices:(results[2].data||[]).reverse(),preferences:results[3].data||{storage_consent:false,ai_consent:false,voice_consent:false},insights:results[4].data||[],aiAvailable:!!(process.env.OPENAI_API_KEY&&process.env.OPENAI_MODEL),accountDeletionAvailable:!!process.env.SUPABASE_SERVICE_ROLE_KEY};
+ return json({...data,accountId:user.id,twin:buildTwin(data.checkins,data.assessments,data.voices)});
+ }catch(e){return failure(e);}}
+export async function POST(request:Request){try{
+ const {db,user}=await authenticate(request),input=record(await body(request));
+ if(input.kind==='preferences'){const values=preferences(input.values);const {error}=await db.from('preferences').upsert({user_id:user.id,...values,updated_at:new Date().toISOString()});if(error)throw error;return json({ok:true});}
+ await requireConsent(db,user.id,input.kind==='voice'?'voice_consent':'storage_consent');
+ let error;
+ if(input.kind==='checkin')({error}=await db.from('checkins').upsert({user_id:user.id,...checkin(input.values)},{onConflict:'user_id,on_date'}));
+ else if(input.kind==='import'){if(typeof input.csv!=='string')throw new HttpError('Choose a CSV file.',400);const rows=csv(input.csv);({error}=await db.from('checkins').upsert(rows.map(r=>({...r,user_id:user.id})),{onConflict:'user_id,on_date'}));}
+ else if(input.kind==='assessment')({error}=await db.from('assessments').insert({user_id:user.id,...assessment(input.values)}));
+ else if(input.kind==='voice')({error}=await db.from('voices').insert({user_id:user.id,...voice(input.values)}));
+ else throw new HttpError('Unknown data operation.',400);
+ if(error)throw error;return json({ok:true});
+ }catch(e){return failure(e);}}
+export async function DELETE(request:Request){try{const {db}=await authenticate(request);const {error}=await db.rpc('delete_my_data');if(error)throw error;return json({ok:true});}catch(e){return failure(e);}}

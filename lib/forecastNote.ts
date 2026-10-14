@@ -1,0 +1,2 @@
+import type {buildTwin} from './analytics';
+export function forecastNote(twin:ReturnType<typeof buildTwin>){const f=twin.sleepForecast;return f?`Experimental continuation estimate for ${f.date}: ${f.estimate.toFixed(1)} hours of sleep; historical-variation band ${f.low.toFixed(1)}–${f.high.toFixed(1)} hours. This is a simple linear continuation of recorded sleep, not a neurological prediction or a calibrated confidence interval.`:'At least seven daily records are needed for a continuation estimate.';}

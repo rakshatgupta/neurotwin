@@ -10,3 +10,7 @@ skills-lock.json
 .cursor/
 .github/skills/
 .gemini/
+.env*
+!.env.example
+.vercel/
+coverage/
