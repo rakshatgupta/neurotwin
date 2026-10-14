@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+.agents/
+.claude/
+skills-lock.json
+.taste-skill/
+.codex/
+.cursor/
+.github/skills/
+.gemini/
