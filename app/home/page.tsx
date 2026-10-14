@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Activity, Brain, Moon, Footprints, Sparkles, LayoutDashboard, SlidersHorizontal, ShieldCheck, Plus, ArrowUpRight, Check, Fingerprint } from 'lucide-react';
 import Head from '../../components/Head';
@@ -11,7 +12,7 @@ export default function Dashboard(){
  const last=entries.at(-1);const avg=(field:'sleep'|'stress'|'activity'|'score')=>entries.length?entries.reduce((a,e)=>a+e[field],0)/entries.length:0;
  const points=entries.length?entries.slice(range==='7 days'?-7:-30).map(e=>e.score):[68,72,69,79,76,80,84];
  const poly=points.map((v,i)=>`${20+i*(560/Math.max(points.length-1,1))},${175-v*1.6}`).join(' ');
- return <main className="dashboard" data-ui><aside className="sidebar"><a href="/" className="brand">neurotwin<span className="brand-ai">AI</span></a><nav>{tabs.map(({name,Icon})=><button key={name} onClick={()=>{setTab(name);setSaved(false)}} className={tab===name?'active':''}><Icon size={17}/>{name}</button>)}</nav><div className="sidebar-bottom"><ShieldCheck size={20}/><p>Your mind. Your data.<br/>Stored only in this browser.</p><a href="/">← Back to the experience</a></div></aside>
+ return <main className="dashboard" data-ui><aside className="sidebar"><Link href="/" className="brand">neurotwin<span className="brand-ai">AI</span></Link><nav>{tabs.map(({name,Icon})=><button key={name} onClick={()=>{setTab(name);setSaved(false)}} className={tab===name?'active':''}><Icon size={17}/>{name}</button>)}</nav><div className="sidebar-bottom"><ShieldCheck size={20}/><p>Your mind. Your data.<br/>Stored only in this browser.</p><Link href="/">← Back to the experience</Link></div></aside>
  <div className="dash-main"><header className="dash-header"><span>Your personal wellness space</span><div className="flex items-center gap-4"><span className="demo-badge">{entries.length?'LOCAL WELLNESS TRACKER':'DEMO EXPLORATION'}</span><span className="avatar">You</span></div></header>
  <div className="dash-title"><div><h1>{tab==='Overview'?'A little more in tune.':tab}</h1><p>{tab==='Overview'?'Everyday signals. A clearer picture of you.':tab==='Daily check-in'?'A moment to notice how you’re doing.':tab==='My baseline'?'Your patterns are the starting point.':tab==='Trends'?'See how your signals change over time.':'You stay in control of what you share.'}</p></div>{tab==='Overview'&&<button className="primary-button" onClick={()=>setTab('Daily check-in')}><Plus size={16}/> Daily check-in</button>}</div>
  {saved&&<div className="success-message" role="status"><Check size={18}/> Check-in saved. Your local wellness view has been updated.</div>}
