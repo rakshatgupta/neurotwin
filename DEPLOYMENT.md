@@ -36,14 +36,14 @@ If the `github` remote already exists, replace `remote add` with `git remote set
 | --- | --- | --- |
 | `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | Public |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Your Supabase publishable key | Public |
-| `OPENAI_API_KEY` | Your OpenAI platform API key | Server only |
-| `OPENAI_MODEL` | `gpt-4.1-mini` or another supported Responses model available to your account | Server only |
+| `GROQ_API_KEY` | Your Groq API key; optional | Server only |
+| `GROQ_MODEL` | `openai/gpt-oss-20b` (default), or a compatible available chat model | Server only |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service-role key | Server only; enables account deletion |
 
 4. Deploy. Copy the resulting Vercel URL into Supabase’s Site URL and allowed redirects as described above. Redeploy after changing public environment variables, since Next.js includes them in client bundles at build time.
 5. Open `/account/`, create an account, confirm the email, and sign in. Open Privacy & data and save your consent choices before adding records.
 
-If the OpenAI key is absent, check-ins, assessments, imports, baseline analysis, forecasts, and deletion still work; the AI button explains that its provider is not configured. The privileged Supabase key is only needed for permanent sign-in-account deletion; record deletion uses the user’s own authenticated session.
+Without a Groq key, the built-in statistical summary works directly in the browser. Optional AI explanations require Groq configuration. Legacy `OPENAI_API_KEY` and `OPENAI_MODEL` variables are unused by this version. The privileged Supabase key is only needed for permanent sign-in-account deletion; record deletion uses the user’s own authenticated session.
 
 ## 4. Verify before inviting users
 
@@ -51,7 +51,7 @@ Use two disposable accounts. Confirm that each account sees only its own data, i
 
 The database isolation suite is `supabase/tests/rls.sql`. Run it against a disposable/local project after the migration (using Supabase SQL Editor or `supabase test db` with a local setup). It creates test-only fixtures inside a transaction, checks authorization and consent policies, and rolls back. The suite should produce 15 passing tests. Do not use a project containing matching fixture IDs.
 
-For live AI verification, enable AI consent, save a synthetic check-in, and request an insight. The app sends a summary to OpenAI only after the request-specific checkbox is checked. It sends no email, account ID, or raw audio, sets `store:false`, and keeps its own generated explanation in the user’s database records. Provider retention policies still apply. The per-account limit is 10 attempts per UTC day, at least one minute apart; unsuccessful provider requests count as attempts.
+For live AI verification, save a synthetic check-in and review/save the new Groq consent in Privacy & data. Previous OpenAI consent is not accepted for the new provider. Select the request-specific checkbox and generate an explanation. The app sends summarized wellness signals to Groq, not email, account ID or raw audio. Groq data policies apply. The per-account limit is 10 attempts per UTC day, at least one minute apart. Provider failures still count as attempts. Missing keys, quota errors, invalid responses and network failures leave the clearly labelled statistical summary available; failed responses are not stored as AI explanations. Previously saved explanations retain their original text and timestamp. No new SQL migration is needed. See GROQ_SETUP.md for the exact configuration steps.
 
 ## Local development
 
@@ -80,5 +80,6 @@ Dashboard history shows the latest 365 daily records and 100 cognitive/voice ses
 - https://supabase.com/docs/guides/getting-started/quickstarts/nextjs
 - https://supabase.com/docs/guides/database/postgres/row-level-security
 - https://vercel.com/docs/frameworks/full-stack/nextjs
-- https://developers.openai.com/api/docs/guides/migrate-to-responses
-- https://developers.openai.com/api/docs/guides/your-data
+- https://console.groq.com/docs/openai
+- https://console.groq.com/docs/rate-limits
+- https://console.groq.com/docs/your-data

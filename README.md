@@ -1,6 +1,6 @@
 # NeuroTwin AI
 
-Next.js 15, React 19, Tailwind 4, Supabase Auth/Postgres, and an optional OpenAI Responses integration.
+Next.js 15, React 19, Tailwind 4, Supabase Auth/Postgres, and optional Groq AI explanations with a built-in statistical fallback.
 
 The landing page keeps the animated head and clickable brain. The account workspace supports:
 
@@ -10,7 +10,9 @@ The landing page keeps the animated head and clickable brain. The account worksp
 - CSV imports of daily wearable summaries.
 - Optional microphone duration/recording-level extraction without storing or uploading raw audio.
 - Adaptive per-user rolling baselines, robust deviation detection, multimodal fusion, sleep trends, and simple continuation estimates.
-- Consent-gated AI explanations generated on the server, with persistent database rate limiting.
+- Built-in statistical summaries calculated in the browser, without an API key or external data transfer.
+- Optional Groq AI explanations generated on the server, with fresh provider-specific consent and persistent database rate limiting.
+- Safe statistical fallback when the provider is unconfigured, rate limited or unavailable.
 - Record export, atomic record deletion, and optional permanent account deletion.
 
 ## Run
@@ -31,3 +33,7 @@ Read [DEPLOYMENT.md](DEPLOYMENT.md) to configure Supabase and deploy from GitHub
 ## Research scope
 
 This application supports non-diagnostic awareness. The baseline algorithm is statistical, not a clinically trained neurological predictor. AI text explains recorded patterns without asserting causation or diagnosis. Cognitive scores depend on device and practice. Direct wearable OAuth and clinical model training are outside this implementation; optional wearable data enters through validated CSV imports.
+
+## Free insight setup
+
+Statistical summaries work immediately without a provider key. For optional language-model explanations, set server-only `GROQ_API_KEY` and `GROQ_MODEL` (default `openai/gpt-oss-20b`) in Vercel, then redeploy. OpenAI API variables are no longer used. Groq account eligibility and free-tier limits apply. No database migration is required: existing `consent_version` records the new provider consent, and provenance is stored in explanation text. Users must explicitly review/save Groq consent; prior OpenAI consent is not reused. See [GROQ_SETUP.md](GROQ_SETUP.md).
