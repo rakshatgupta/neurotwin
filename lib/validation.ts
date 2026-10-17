@@ -15,7 +15,20 @@ export function checkin(input:unknown):Checkin {
   if(!['Clear','Balanced','Foggy','Tired'].includes(String(v.mood)))throw new InputError('Select a valid mood.');
   return {on_date:date,sleep:number(v.sleep,0,24,'Sleep'),activity:number(v.activity,0,1440,'Activity'),stress:number(v.stress,0,10,'Stress'),mood:v.mood as string,source:v.source==='csv'?'csv':'manual'};
 }
-export function assessment(input:unknown) {const v=record(input);const starts=number(v.false_starts,0,100,'False starts');if(!Number.isInteger(starts))throw new InputError('False starts must be an integer.');return {reaction_ms:number(v.reaction_ms,80,10000,'Reaction time'),memory_accuracy:number(v.memory_accuracy,0,100,'Recall accuracy'),false_starts:starts};}
+export function assessment(input:unknown) {
+ const v=record(input), starts=number(v.false_starts,0,100,'False starts');
+ if(!Number.isInteger(starts))throw new InputError('False starts must be an integer.');
+ const result={reaction_ms:number(v.reaction_ms,80,10000,'Reaction time'),memory_accuracy:number(v.memory_accuracy,0,100,'Recall accuracy'),false_starts:starts};
+ const contextKeys=['hours_awake','sleepiness_score','assessment_started_at','utc_offset_minutes'];
+ // Older clients can still save legacy results, without fabricated context.
+ if(!contextKeys.some(key=>v[key]!==undefined))return result;
+ const hours=number(v.hours_awake,0,48,'Hours awake'),sleepiness=number(v.sleepiness_score,1,10,'Sleepiness'),offset=number(v.utc_offset_minutes,-840,840,'Timezone offset');
+ if(!Number.isInteger(sleepiness)||!Number.isInteger(offset))throw new InputError('Sleepiness and timezone offset must be integers.');
+ const started=v.assessment_started_at;
+ if(typeof started!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(started)||!Number.isFinite(Date.parse(started))||new Date(started).toISOString()!==started||Date.parse(started)>Date.now()+300000||Date.parse(started)<Date.now()-3600000)throw new InputError('Assessment start time is invalid or older than one hour. Start a new assessment.');
+ if(v.protocol_version!=='neurotwin-five-trial-v1')throw new InputError('Unsupported assessment protocol.');
+ return {...result,hours_awake:hours,sleepiness_score:sleepiness,assessment_started_at:started,utc_offset_minutes:offset,protocol_version:'neurotwin-five-trial-v1'};
+}
 export function voice(input:unknown) {const v=record(input);return {duration_ms:number(v.duration_ms,3000,61000,'Recording duration'),rms_mean:number(v.rms_mean,0,1,'Audio level')};}
 export function preferences(input:unknown) {const v=record(input);for(const key of ['storage_consent','ai_consent','voice_consent'])if(typeof v[key]!=='boolean')throw new InputError('Consent settings must be true or false.');if(!v.storage_consent&&(v.ai_consent||v.voice_consent))throw new InputError('Enable storage before optional processing.');return {storage_consent:v.storage_consent as boolean,ai_consent:v.ai_consent as boolean,voice_consent:v.voice_consent as boolean};}
 export function csv(text:string) {
