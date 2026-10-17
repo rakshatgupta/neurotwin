@@ -1,0 +1,76 @@
+{
+  "version": "brighter-time-research-v1",
+  "source_doi": "10.48420/20212265",
+  "license": "CC BY 4.0",
+  "training_data": "real research PVT records",
+  "target": "next recorded PVT median reaction time (ms), within 48 hours",
+  "features": [
+    "previous_reaction_ms",
+    "recent_reaction_mean_ms",
+    "previous_time_awake",
+    "previous_sleepiness",
+    "previous_clock_sin",
+    "previous_clock_cos"
+  ],
+  "means": [
+    435.3375893769152,
+    432.88449097718757,
+    8.327800476676881,
+    4.404494382022472,
+    -0.22628761367138453,
+    -0.07211585308743601
+  ],
+  "scales": [
+    87.60521866763892,
+    78.86475682992757,
+    5.557751018877843,
+    1.974769410187105,
+    0.5937767062272954,
+    0.7687798402496294
+  ],
+  "coefficients": [
+    9.508131141328553,
+    61.70568782825683,
+    5.815721638113557,
+    -6.396519683260538,
+    0.7159042248771346,
+    -5.674247148939154
+  ],
+  "intercept": 438.05822267620016,
+  "alpha": 1.0,
+  "audit": {
+    "raw_rows": 3106,
+    "pvt_rows": 1305,
+    "invalid_pvt_rows": 0,
+    "eligible_examples": 1215,
+    "participants": 69,
+    "observed_sleepiness_range": [
+      1.0,
+      10.0
+    ]
+  },
+  "evaluation": {
+    "model_mae_ms": 38.52446508933355,
+    "previous_result_mae_ms": 46.04872881355932,
+    "recent_mean_mae_ms": 38.525776836158194,
+    "train_examples": 710,
+    "validation_examples": 269,
+    "test_examples": 236,
+    "split": "60/20/20 participant-disjoint; validation selects alpha; refit development participants only",
+    "selection_validation_mae": {
+      "0.1": 41.23458355330451,
+      "1.0": 41.234104544465914,
+      "10.0": 41.26341596349966,
+      "100.0": 41.84825712493554
+    }
+  },
+  "validated_for_neurotwin_browser_task": false,
+  "limitations": [
+    "Prior sessions of held-out participants are available as inputs, but never as fit targets.",
+    "Not a prospective calendar-wide evaluation.",
+    "Observed KSS includes 10; confirm source coding before deployment.",
+    "No disease labels or clinical validation.",
+    "PVT research task differs from five-trial NeuroTwin task.",
+    "Results apply to this fixed split; repeat grouped evaluation before performance claims."
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "splits": 10,
+  "means": {
+    "model_mae_ms": 39.906725599252496,
+    "previous_result_mae_ms": 47.21408498599849,
+    "recent_mean_mae_ms": 39.25769193018922
+  },
+  "wins": 4,
+  "rows": [
+    {
+      "seed": 0,
+      "model_mae_ms": 42.93582080760471,
+      "previous_result_mae_ms": 48.080708661417326,
+      "recent_mean_mae_ms": 41.363188976377955,
+      "improvement_over_recent_mean_ms": -1.572631831226758
+    },
+    {
+      "seed": 1,
+      "model_mae_ms": 40.62701324351779,
+      "previous_result_mae_ms": 53.1,
+      "recent_mean_mae_ms": 41.06843971631205,
+      "improvement_over_recent_mean_ms": 0.4414264727942623
+    },
+    {
+      "seed": 2,
+      "model_mae_ms": 39.618707200921264,
+      "previous_result_mae_ms": 48.35931558935361,
+      "recent_mean_mae_ms": 39.56653992395437,
+      "improvement_over_recent_mean_ms": -0.05216727696689105
+    },
+    {
+      "seed": 3,
+      "model_mae_ms": 34.68180261714638,
+      "previous_result_mae_ms": 37.325490196078434,
+      "recent_mean_mae_ms": 31.157189542483657,
+      "improvement_over_recent_mean_ms": -3.5246130746627244
+    },
+    {
+      "seed": 4,
+      "model_mae_ms": 41.571252706558305,
+      "previous_result_mae_ms": 46.88766519823788,
+      "recent_mean_mae_ms": 39.89280469897211,
+      "improvement_over_recent_mean_ms": -1.6784480075861978
+    },
+    {
+      "seed": 5,
+      "model_mae_ms": 34.89867767524272,
+      "previous_result_mae_ms": 39.05122950819672,
+      "recent_mean_mae_ms": 33.529713114754095,
+      "improvement_over_recent_mean_ms": -1.368964560488628
+    },
+    {
+      "seed": 6,
+      "model_mae_ms": 42.24780903028539,
+      "previous_result_mae_ms": 50.653992395437264,
+      "recent_mean_mae_ms": 43.38751584283903,
+      "improvement_over_recent_mean_ms": 1.1397068125536407
+    },
+    {
+      "seed": 7,
+      "model_mae_ms": 42.01166642867904,
+      "previous_result_mae_ms": 51.407630522088354,
+      "recent_mean_mae_ms": 42.26238286479251,
+      "improvement_over_recent_mean_ms": 0.25071643611346417
+    },
+    {
+      "seed": 8,
+      "model_mae_ms": 46.79795648511402,
+      "previous_result_mae_ms": 56.979838709677416,
+      "recent_mean_mae_ms": 47.50604838709677,
+      "improvement_over_recent_mean_ms": 0.7080919019827476
+    },
+    {
+      "seed": 9,
+      "model_mae_ms": 33.67654979745536,
+      "previous_result_mae_ms": 40.29497907949791,
+      "recent_mean_mae_ms": 32.84309623430963,
+      "improvement_over_recent_mean_ms": -0.8334535631457314
+    }
+  ]
+}
