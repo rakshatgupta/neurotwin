@@ -1,0 +1,38 @@
+{
+  "version": "synthetic-demo-v1",
+  "training_data": "synthetic",
+  "purpose": "Pipeline demonstration only",
+  "target": "reaction_ms",
+  "features": [
+    "sleep",
+    "activity",
+    "stress",
+    "previous_reaction_ms"
+  ],
+  "means": [
+    7.157310922837862,
+    35.734121247216976,
+    4.930555555555555,
+    328.9328472191048
+  ],
+  "scales": [
+    0.7750347589861327,
+    15.104199824530191,
+    2.8152678424425903,
+    35.62238162443002
+  ],
+  "coefficients": [
+    -6.319646533307178,
+    0.7064524396414059,
+    14.999285452733767,
+    8.521055984009008
+  ],
+  "intercept": 326.2972951484893,
+  "evaluation": {
+    "training_examples": 144,
+    "test_examples": 36,
+    "model_mae_ms": 17.632496750741776,
+    "baseline_mae_ms": 21.9287382183617
+  },
+  "real_world_validated": false
+}
