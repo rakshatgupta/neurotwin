@@ -84,7 +84,7 @@ try{
  await act(async()=>[...document.querySelectorAll('button')].find(el=>el.textContent.startsWith('Stop recording')).click());
  await click('Save numeric features');check(records.voices.length===1);check(records.voices[0].duration_ms===5000);check(Math.abs(records.voices[0].rms_mean-.1)<1e-6);check(trackStops===1);
  await click('Start microphone');await act(async()=>{Object.defineProperty(document,'hidden',{value:true,configurable:true});document.dispatchEvent(new window.Event('visibilitychange'))});check(!button('Save numeric features'));check(trackStops===2);Object.defineProperty(document,'hidden',{value:false,configurable:true});
- await click('Personal predictions');check(button('Generate personal prediction').disabled);await act(async()=>document.querySelector('input[type=checkbox]').click());await click('Generate personal prediction');check(document.body.textContent.includes('Complete at least three assessments'));
+ await click('Personal predictions');check(button('Generate personal prediction').disabled);await act(async()=>document.querySelector('input[type=checkbox]').click());await click('Generate personal prediction');check(document.body.textContent.includes('Complete at least three assessments'));await click('Go to cognitive tests');check(document.querySelector('h1').textContent==='Cognitive tests');
  await click('Privacy & data');await click('Export my records');check(downloads===1);
  check(button('Delete my account').disabled);
  const inputs=document.querySelectorAll('input[type=checkbox]');await act(async()=>inputs[0].click());await click('Save consent choices');check(records.preferences.storage_consent===false);
