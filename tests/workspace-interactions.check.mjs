@@ -68,8 +68,8 @@ try{
  await act(async()=>document.querySelector('.research-nav summary').click());await click('Methods & evaluation');check(document.querySelector('h1').textContent==='About the research');
  await click('Trends & import');await click('Edit');
  check(document.querySelector('input[type=time]').value==='23:00');
- const ranges=document.querySelectorAll('input[type=range]');await fill(ranges[0],'6.5');
- await fill(document.querySelector('input[type=time]'),'22:30');await click('Save check-in');
+ const ranges=document.querySelectorAll('input[type=range]');await fill(ranges[0],'6.5');await fill(document.querySelector('input[aria-label="Daily steps"]'),'7000');
+ await fill(document.querySelector('input[type=time]'),'22:30');const previousTwinWrites=calls.filter(c=>c.url==='/api/twin/'&&c.method==='POST').length;await click('Save check-in');check(records.checkins.find(r=>r.steps===7000));check(calls.filter(c=>c.url==='/api/twin/'&&c.method==='POST').length>previousTwinWrites);
  check(records.checkins.find(row=>row.on_date===today).sleep===6.5&&records.checkins.find(row=>row.on_date===today).bed_time==='22:30');
  await click('Cognitive tests');
  await fill(document.getElementById('assessment-hours-awake'),'8');await fill(document.getElementById('assessment-sleepiness'),'4');await click('Start assessment');
@@ -77,7 +77,7 @@ try{
  for(let round=0;round<3;round++){const digits=document.querySelector('.memory-digits').textContent;await advance(4000);await fill(document.querySelector('input[inputmode=numeric]'),digits);await click('Submit recall')}
  await click('Save assessment');check(records.assessments.length===1);check(records.assessments[0].memory_accuracy===100);check(records.assessments[0].hours_awake===8);
  await fill(document.getElementById('assessment-hours-awake'),'8');await fill(document.getElementById('assessment-sleepiness'),'4');await click('Start assessment');await act(async()=>{Object.defineProperty(document,'hidden',{value:true,configurable:true});document.dispatchEvent(new window.Event('visibilitychange'))});check(document.body.textContent.includes('Assessment interrupted'));Object.defineProperty(document,'hidden',{value:false,configurable:true});
- await click('Trends & import');check(document.body.textContent.includes('sleepiness 4/10'));
+ await click('Trends & import');check(document.body.textContent.includes('sleepiness 4/10'));check(document.body.textContent.includes('7000'));
  await click('Voice signal');check(document.body.textContent.includes('No voice features saved'));check(!button('Start microphone'));
  await click('Privacy & data');await act(async()=>document.querySelectorAll('input[type=checkbox]')[2].click());await click('Save consent choices');
  await click('Voice signal');await click('Start microphone');clock+=5000;

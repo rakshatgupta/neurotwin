@@ -39,3 +39,6 @@ This application supports non-diagnostic awareness. The baseline algorithm is st
 ## Free insight setup
 
 Statistical summaries work immediately without a provider key. For optional language-model explanations, set server-only `GROQ_API_KEY` and `GROQ_MODEL` (default `openai/gpt-oss-20b`) in Vercel, then redeploy. OpenAI API variables are no longer used. Groq account eligibility and free-tier limits apply. No database migration is required: existing `consent_version` records the new provider consent, and provenance is stored in explanation text. Users must explicitly review/save Groq consent; prior OpenAI consent is not reused. See [GROQ_SETUP.md](GROQ_SETUP.md).
+# Latest feature-list audit
+
+See [FEATURE_LIST_AUDIT.md](FEATURE_LIST_AUDIT.md) for all four core capabilities, nine pipeline stages, the 18-check acceptance guide, and migration 005 required for optional daily steps.

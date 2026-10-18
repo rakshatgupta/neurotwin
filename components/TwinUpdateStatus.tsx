@@ -5,7 +5,7 @@ import type {Dataset} from '../lib/types';
 import type {HistoryPoint} from '../lib/analytics';
 import {api} from '../lib/supabase';
 type Update={id:string;created_at:string;algorithm_version:string;dataset_hash:string;summary:{evaluated_at:string;status:string;counts:{checkins:number;assessments:number;voices:number};sources:Record<string,{id?:string;date:string;updated_at?:string}[]>;deviation_count:number;deviations:HistoryPoint[]}};
-export default function TwinUpdateStatus({data}:{data:Dataset}){
+export default function TwinUpdateStatus({data,visible=true}:{data:Dataset;visible?:boolean}){
  const [updates,setUpdates]=useState<Update[]>([]),[busy,setBusy]=useState(false),[error,setError]=useState(''),[retry,setRetry]=useState(0);
  const revision=JSON.stringify([data.checkins,data.assessments,data.voices,data.preferences.storage_consent]);
  useEffect(()=>{let active=true;
@@ -16,6 +16,7 @@ export default function TwinUpdateStatus({data}:{data:Dataset}){
   void sync();return()=>{active=false};
  },[revision,retry]);
  const latest=updates[0];
+ if(!visible)return error?<p role="status" className="panel-sub">{error} <button type="button" disabled={busy} onClick={()=>setRetry(n=>n+1)}>Retry twin update</button></p>:null;
  return <section className="panel mt-6" aria-label="Digital twin processing status"><h2>Latest saved twin update</h2>
  {busy&&<p role="status">Checking saved analysis…</p>}{error&&<p role="status" className="panel-sub">{error} <button type="button" disabled={busy} onClick={()=>setRetry(n=>n+1)}>Retry processing history</button></p>}
  {latest?<><p>Saved {new Date(latest.created_at).toLocaleString()} · reference {latest.summary.status==='established'?'established':'forming'}.</p><SeeMore label="Details"><p className="panel-sub">Data used: {latest.summary.counts?.checkins??0} daily records, {latest.summary.counts?.assessments??0} cognitive sessions, {latest.summary.counts?.voices??0} optional voice records. This snapshot describes the data evaluated at that time, not a continuous sensor connection.</p></SeeMore>

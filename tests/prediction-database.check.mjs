@@ -12,7 +12,8 @@ const check=(condition)=>{assert.ok(condition);checks++};
 const a='10000000-0000-0000-0000-000000000001',b='10000000-0000-0000-0000-000000000002';
 try{
  await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth to authenticated,anon;`);
- for(const file of ['001_neurotwin.sql','002_assessment_prediction_context.sql','003_personal_predictions.sql','004_twin_updates_and_sleep_patterns.sql'])await db.exec(readFileSync(new URL(`../supabase/migrations/${file}`,import.meta.url),'utf8'));
+ for(const file of ['001_neurotwin.sql','002_assessment_prediction_context.sql','003_personal_predictions.sql','004_twin_updates_and_sleep_patterns.sql','005_optional_daily_steps.sql'])await db.exec(readFileSync(new URL(`../supabase/migrations/${file}`,import.meta.url),'utf8'));
+ await db.exec(readFileSync(new URL('../supabase/migrations/005_optional_daily_steps.sql',import.meta.url),'utf8'));
  // Verify both additive migrations are repeatable.
  await db.exec(readFileSync(new URL('../supabase/migrations/004_twin_updates_and_sleep_patterns.sql',import.meta.url),'utf8'));
  // Verify migration 003 is repeatable.
@@ -58,6 +59,11 @@ try{
  await db.query("update public.checkins set sleep=7.5 where user_id=$1",[a]);
  check(Date.parse((await db.query('select updated_at from public.checkins')).rows[0].updated_at)>Date.parse('2026-01-01'));
  await assert.rejects(()=>db.query('update public.checkins set sleep_quality=6'),/check constraint/);checks++;
+ await db.query('update public.checkins set steps=7000 where user_id=$1',[a]);
+ check((await db.query('select steps from public.checkins')).rows[0].steps===7000);
+ await assert.rejects(()=>db.query('update public.checkins set steps=-1'),/check constraint/);checks++;
+ await assert.rejects(()=>db.query('update public.checkins set steps=200001'),/check constraint/);checks++;
+ await login(b);check((await db.query('select steps from public.checkins')).rows.length===0);await login(a);
  const snapshot={counts:{checkins:1,assessments:3,voices:0},deviations:[]};
  await db.query('insert into public.twin_updates(user_id,algorithm_version,dataset_hash,summary) values($1,$2,$3,$4)',[a,'test-v1','a'.repeat(64),snapshot]);
  await assert.rejects(()=>db.query("update public.twin_updates set algorithm_version='fake'"),/permission denied/);checks++;
@@ -67,7 +73,7 @@ try{
  await assessment(b,new Date(Date.now()-1000).toISOString());
  await login(a);await db.query('select public.delete_my_data()');
  check((await db.query('select * from public.predictions')).rows.length===0);
- check((await db.query('select * from public.assessments')).rows.length===0);
+ check((await db.query('select * from public.assessments')).rows.length===0);check((await db.query('select steps from public.checkins')).rows.length===0);
  await login(b);check((await db.query('select * from public.assessments')).rows.length===1);check((await db.query('select * from public.twin_updates')).rows.length===1);
  await login(a);await assert.rejects(()=>db.query('select public.create_personal_prediction()'),/Enable storage consent/);checks++;
  await assert.rejects(()=>db.query('insert into public.twin_updates(user_id,algorithm_version,dataset_hash,summary) values($1,$2,$3,$4)',[a,'test-v1','c'.repeat(64),snapshot]),/row-level security/);checks++;

@@ -1,4 +1,5 @@
 export const measurements:Record<string,{label:string;unit:string;meaning:string;why:string}>={
+ steps:{label:'Daily steps',unit:'steps',meaning:'An optional daily count entered by you or imported from a file. Blank means not recorded, not zero.',why:'Steps are a count of walking movements. They cannot be calculated from activity minutes without extra information. Your steps reference needs eight dated counts and uses a minimum spread of 500 steps for descriptive comparisons, not a medical threshold.'},
  sleep:{label:'Sleep duration',unit:'hours',meaning:'Time you reported being asleep, not time spent in bed.',why:'Hours make nightly duration easy to read; 0.5 hours is 30 minutes.'},
  activity:{label:'Physical activity',unit:'minutes',meaning:'Daily movement duration you entered or imported.',why:'Minutes describe duration. This is not steps, calories or exercise intensity.'},
  stress:{label:'Reported stress',unit:'points out of 10',meaning:'Your own stress rating from 0 (lowest) to 10 (highest).',why:'A consistent rating scale helps compare your entries; it is not a clinical measurement.'},
@@ -6,4 +7,4 @@ export const measurements:Record<string,{label:string;unit:string;meaning:string
  memory_accuracy:{label:'Recall accuracy',unit:'%',meaning:'Percentage of correctly recalled digits in this task.',why:'Percent expresses the share correct out of 100. It is task performance, not overall memory capacity.'},
  voice:{label:'Recording level',unit:'RMS (unitless)',meaning:'Average root-mean-square amplitude of normalized microphone samples.',why:'RMS summarizes signal amplitude. It is not decibels or a neurological score; distance, device and surroundings affect it.'},
 };
-export function measurementFor(signal:string){const keys:Record<string,string>={'Sleep':'sleep','Activity':'activity','Stress':'stress','Reaction time':'reaction_ms','Recall accuracy':'memory_accuracy','Recording level':'voice'};return measurements[keys[signal]||signal]||measurements.sleep;}
+export function measurementFor(signal:string){const keys:Record<string,string>={'Sleep':'sleep','Activity':'activity','Steps':'steps','Stress':'stress','Reaction time':'reaction_ms','Recall accuracy':'memory_accuracy','Recording level':'voice'};return measurements[keys[signal]||signal]||measurements.sleep;}

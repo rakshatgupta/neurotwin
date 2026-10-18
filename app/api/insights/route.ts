@@ -11,9 +11,9 @@ export async function POST(request:Request){try{
  const consent=await requireConsent(db,user.id,'ai_consent');
  if(!hasGroqConsent(consent))throw new HttpError('Save the updated Groq consent in Privacy & data first.',403);
  const [c,a,v]=await Promise.all([
-  db.from('checkins').select('on_date,sleep,activity,stress,mood,source,bed_time,wake_time,sleep_quality').eq('user_id',user.id).order('on_date',{ascending:false}).limit(31),
-  db.from('assessments').select('created_at,reaction_ms,memory_accuracy,false_starts').eq('user_id',user.id).order('created_at',{ascending:false}).limit(31),
-  db.from('voices').select('created_at,duration_ms,rms_mean').eq('user_id',user.id).order('created_at',{ascending:false}).limit(31),
+  db.from('checkins').select('on_date,sleep,activity,steps,stress,mood,source,bed_time,wake_time,sleep_quality').eq('user_id',user.id).order('on_date',{ascending:false}).limit(365),
+  db.from('assessments').select('created_at,reaction_ms,memory_accuracy,false_starts').eq('user_id',user.id).order('created_at',{ascending:false}).limit(100),
+  db.from('voices').select('created_at,duration_ms,rms_mean').eq('user_id',user.id).order('created_at',{ascending:false}).limit(100),
  ]);
  if(c.error||a.error||v.error)throw new Error('Database query failed');
  if(!c.data?.length&&!a.data?.length&&!v.data?.length)throw new HttpError('Save at least one check-in, cognitive result or optional voice feature first.',400);
