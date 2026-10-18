@@ -6,7 +6,7 @@ export const dynamic='force-dynamic';
 export async function GET(request:Request){try{
  const {db,user}=await authenticate(request);
  const results=await Promise.all([
-  db.from('checkins').select('id,on_date,sleep,activity,stress,mood,source').eq('user_id',user.id).order('on_date',{ascending:false}).limit(365),
+  db.from('checkins').select('id,on_date,sleep,activity,stress,mood,source,bed_time,wake_time,sleep_quality,created_at,updated_at').eq('user_id',user.id).order('on_date',{ascending:false}).limit(365),
   db.from('assessments').select('id,created_at,reaction_ms,memory_accuracy,false_starts,hours_awake,sleepiness_score,assessment_started_at,utc_offset_minutes,protocol_version').eq('user_id',user.id).order('created_at',{ascending:false}).limit(100),
   db.from('voices').select('id,created_at,duration_ms,rms_mean').eq('user_id',user.id).order('created_at',{ascending:false}).limit(100),
   db.from('preferences').select('storage_consent,ai_consent,voice_consent,consent_version').eq('user_id',user.id).maybeSingle(),

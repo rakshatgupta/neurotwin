@@ -13,7 +13,10 @@ export function checkin(input:unknown):Checkin {
   const date=v.on_date;
   if(typeof date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(Date.parse(date))||new Date(date).toISOString().slice(0,10)!==date||date>new Date(Date.now()+86400000).toISOString().slice(0,10)||date<'2000-01-01') throw new InputError('Use a valid date from 2000 through today.');
   if(!['Clear','Balanced','Foggy','Tired'].includes(String(v.mood)))throw new InputError('Select a valid mood.');
-  return {on_date:date,sleep:number(v.sleep,0,24,'Sleep'),activity:number(v.activity,0,1440,'Activity'),stress:number(v.stress,0,10,'Stress'),mood:v.mood as string,source:v.source==='csv'?'csv':'manual'};
+  const result:Checkin={on_date:date,sleep:number(v.sleep,0,24,'Sleep'),activity:number(v.activity,0,1440,'Activity'),stress:number(v.stress,0,10,'Stress'),mood:v.mood as string,source:v.source==='csv'?'csv':'manual'};
+  for(const key of ['bed_time','wake_time'] as const)if(key in v){const value=v[key];if(value!==null&&(typeof value!=='string'||!/^([01]\d|2[0-3]):[0-5]\d$/.test(value)))throw new InputError('Use a local clock time in HH:MM format.');result[key]=value as string|null;}
+  if('sleep_quality' in v){if(v.sleep_quality===null)result.sleep_quality=null;else{const quality=number(v.sleep_quality,1,5,'Sleep quality');if(!Number.isInteger(quality))throw new InputError('Sleep quality must be an integer.');result.sleep_quality=quality;}}
+  return result;
 }
 export function assessment(input:unknown) {
  const v=record(input), starts=number(v.false_starts,0,100,'False starts');

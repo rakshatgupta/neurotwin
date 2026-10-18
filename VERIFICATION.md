@@ -1,5 +1,9 @@
 # Implementation and verification status
 
+## Audit update — 18 October 2026
+
+See PROJECT_AUDIT.md for the current complete checklist and evidence boundaries. Local verification: 53 automated tests, 27 disposable PostgreSQL checks, 35 actual React interaction checks with mocked auth/API, 10 signed-out protected HTTP operations and three public routes, strict TypeScript and production build passed. New optional sleep fields and private twin_updates require additive migration 004 before cloud rollout. No live Supabase write, SMTP delivery, microphone permission or Groq call was made by the agent during this audit. Earlier status sections below are historical, not fresh verification claims.
+
 ## Groq and statistical summary update on 17 October 2026
 
 - Replaced OpenAI requests with optional Groq chat completions. Existing OpenAI environment variables are unused; GROQ_API_KEY and optional GROQ_MODEL configure the new provider.
