@@ -1,4 +1,5 @@
 'use client';
+import SeeMore from './SeeMore';
 import {useEffect,useState} from 'react';
 import type {Dataset} from '../lib/types';
 import type {HistoryPoint} from '../lib/analytics';
@@ -17,9 +18,9 @@ export default function TwinUpdateStatus({data}:{data:Dataset}){
  const latest=updates[0];
  return <section className="panel mt-6" aria-label="Digital twin processing status"><h2>Latest saved twin update</h2>
  {busy&&<p role="status">Checking saved analysis…</p>}{error&&<p role="status" className="panel-sub">{error} <button type="button" disabled={busy} onClick={()=>setRetry(n=>n+1)}>Retry processing history</button></p>}
- {latest?<><p>Saved {new Date(latest.created_at).toLocaleString()} · reference {latest.summary.status==='established'?'established':'forming'}.</p><p className="panel-sub">Data used: {latest.summary.counts?.checkins??0} daily records, {latest.summary.counts?.assessments??0} cognitive sessions, {latest.summary.counts?.voices??0} optional voice records. This snapshot describes the data evaluated at that time, not a continuous sensor connection.</p>
+ {latest?<><p>Saved {new Date(latest.created_at).toLocaleString()} · reference {latest.summary.status==='established'?'established':'forming'}.</p><SeeMore label="Details"><p className="panel-sub">Data used: {latest.summary.counts?.checkins??0} daily records, {latest.summary.counts?.assessments??0} cognitive sessions, {latest.summary.counts?.voices??0} optional voice records. This snapshot describes the data evaluated at that time, not a continuous sensor connection.</p></SeeMore>
  <details><summary>Saved changes, source records and processing history</summary>
- <p className="panel-sub">Each distinct dataset is recorded once per algorithm version. Snapshots preserve computed findings when source check-ins are later edited. They are private self-report research records, not tamper-proof clinical evidence.</p>
+ <SeeMore label="Details"><p className="panel-sub">Each distinct dataset is recorded once per algorithm version. Snapshots preserve computed findings when source check-ins are later edited. They are private self-report research records, not tamper-proof clinical evidence.</p></SeeMore>
  {updates.map(update=><article className="mt-4" key={update.id}><h3>{new Date(update.created_at).toLocaleString()}</h3><p className="panel-sub">{update.algorithm_version} · {update.summary.deviation_count??0} historical flags (latest 100 retained per snapshot).</p>
  {Array.isArray(update.summary.deviations)&&update.summary.deviations.slice(-10).reverse().map((point,i)=><p className="panel-sub" key={i}>{point.date.slice(0,10)} · {point.signal}: {Number(point.value).toFixed(2)} {point.unit}, earlier reference {Number(point.reference).toFixed(2)}; {Math.abs(point.deviation).toFixed(2)} reference spreads {point.deviation<0?'below':'above'}.</p>)}
  <details><summary>Input record references</summary><p className="panel-sub">Dataset fingerprint: {update.dataset_hash}</p>{Object.entries(update.summary.sources||{}).map(([name,rows])=><p className="panel-sub" key={name}>{name}: {Array.isArray(rows)?rows.map(row=>`${row.date.slice(0,10)} (${row.id||'unavailable ID'})`).join(', '):'Unavailable'}</p>)}</details>
