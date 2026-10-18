@@ -5,7 +5,7 @@ import MeasurementHelp from './MeasurementHelp';
 import type {Dataset} from '../lib/types';
 import {buildTwin,twinHistory,HISTORY_SIGNALS} from '../lib/analytics';
 import {dataReadiness} from '../lib/readiness';
-import {wellnessActions} from '../lib/guidance';
+import {practicalNextSteps} from '../lib/guidance';
 
 export function DataReadiness({data,now}:{data:Dataset;now:number}){
  const rows=dataReadiness(data,now),twin=buildTwin(data.checkins,data.assessments,data.voices,now);
@@ -16,16 +16,10 @@ export function DataReadiness({data,now}:{data:Dataset;now:number}){
 }
 
 export function WellnessGuidance({data,now}:{data:Dataset;now:number}){
- const twin=buildTwin(data.checkins,data.assessments,data.voices,now);
- return <section className="panel mt-6"><h2>Practical next steps</h2>
- <p className="panel-sub">Suggestions based on your available patterns. Not medical advice.</p><SeeMore label="Your suggested next steps"><ul className="guidance-list">
- {wellnessActions(twin).map(action=><li key={action}>{action}</li>)}
- {twin.status==='forming'&&<li>Keep recording on different days. Eight daily entries are needed for the first daily reference comparison.</li>}
- {!twin.freshFactors.length&&<li>No recent signal has enough reference history for the combined summary. Add a check-in or assessment under your usual conditions.</li>}
- {twin.currentDeviations.length>0&&<li>Review the flagged readings and their dates. A statistical flag can reflect sleep, attention, practice, device differences or recording conditions; it does not establish a health problem.</li>}
- <li>Use a similar device, setting and time of day when practical. Do not repeatedly test or deliberately change your sleep to obtain a particular score.</li>
- <li>If changes persist across comparable recordings, review your routine and consider discussing concerns with a qualified health professional. Seek advice about symptoms rather than relying on this dashboard to diagnose or rule out a condition.</li>
- </ul></SeeMore></section>;
+ const twin=buildTwin(data.checkins,data.assessments,data.voices,now),steps=practicalNextSteps(twin,now);
+ return <section className="panel mt-6"><h2>Practical next steps</h2><p className="panel-sub">Selected from your recent entries and personal comparisons. General wellness guidance, not treatment.</p>
+ <div className="next-step-grid">{steps.map(step=><article className="next-step-card" key={step.id}><h3>{step.title}</h3><p className="panel-sub"><strong>Why this appears:</strong> {step.reason}</p><p><strong>Try next:</strong> {step.action}</p><SeeMore label="Basis and limitations"><p className="panel-sub">{step.source}</p>{step.href&&<a className="quiet-link" href={step.href} target="_blank" rel="noreferrer">Read the general guidance ↗</a>}</SeeMore></article>)}</div>
+ <SeeMore label="Testing cautions and professional follow-up"><p>Use comparable devices and conditions when recording. Do not deliberately change your sleep or repeatedly test to chase a score. If changes persist or concern you, consider discussing them with a qualified health professional. This dashboard cannot diagnose or rule out a condition.</p></SeeMore></section>;
 }
 
 export default function TwinProgress({data}:{data:Dataset}){
