@@ -61,9 +61,10 @@ const app=createRoot(document.getElementById('root'));
 try{
  await act(async()=>{app.render(React.createElement(load(path.join(root,'app/home/page.tsx')).default));await new Promise(resolve=>setTimeout(resolve,0))});
  check(document.body.textContent.includes('Data readiness'));
- await fill(document.querySelector('select[aria-label="Chart signal"]'),'stress');check(document.querySelector('svg[role=img]').getAttribute('aria-label').includes('stress trajectory'));
+ const explanation=document.querySelector('details.explanation');check(!explanation.open);await act(async()=>explanation.querySelector('summary').click());check(explanation.open);await act(async()=>explanation.querySelector('summary').click());check(!explanation.open);
+ await fill(document.querySelector('select[aria-label="Chart signal"]'),'stress');check(document.querySelector('svg[role=img]').getAttribute('aria-label').includes('stress recorded values in /10'));
  for(const name of ['Daily check-in','Cognitive tests','My baseline','Trends & import','Voice signal','Personal predictions','Privacy & data']){await click(name);check(document.querySelector('h1').textContent===name)}
- await click('My baseline');await fill(document.getElementById('reference-signal'),'Stress');check(document.querySelector('svg[role=img]').getAttribute('aria-label').startsWith('Stress:'));await act(async()=>document.querySelector('input[type=checkbox]').click());check(document.body.textContent.includes('Within reference:'));
+ await click('My baseline');await fill(document.getElementById('reference-signal'),'Stress');check(document.querySelector('svg[role=img]').getAttribute('aria-label').startsWith('Stress:'));await act(async()=>document.querySelector('input[type=checkbox]').click());check(document.body.textContent.includes('Within typical range.'));
  await act(async()=>document.querySelector('.research-nav summary').click());await click('Methods & evaluation');check(document.querySelector('h1').textContent==='About the research');
  await click('Trends & import');await click('Edit');
  check(document.querySelector('input[type=time]').value==='23:00');

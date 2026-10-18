@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync,existsSync} from 'node:fs';
 import path from 'node:path';
 import {createRequire} from 'node:module';
 import vm from 'node:vm';
@@ -64,7 +64,7 @@ export function renderInsightFixture(overrides={}) {
   const source=readFileSync(filename,'utf8');const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
   vm.runInNewContext(code,{exports:mod.exports,module:mod,require:name=>{
    if(!name.startsWith('.'))return require(name);
-   const base=path.resolve(path.dirname(filename),name);return load(base+(name.endsWith('PersonalizedInsight')?'.tsx':'.ts'));
+   const base=path.resolve(path.dirname(filename),name);return load([base+'.ts',base+'.tsx'].find(existsSync)||base);
   },process:{env:{}},console,Date,AbortSignal,fetch},{filename});return mod.exports;
  }
  const Component=load(path.resolve('components/PersonalizedInsight.tsx')).default;

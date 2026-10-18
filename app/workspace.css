@@ -4,3 +4,11 @@
 @media(max-width:700px){.sidebar .workspace-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;overflow:visible}.sidebar .nav-group button{font-size:12px;min-height:42px}.research-nav{margin-top:16px}.readiness-grid{grid-template-columns:1fr}.sidebar .nav-label{padding-left:8px}.panel-head select{max-width:100%}.account-email{overflow-wrap:anywhere}.panel .primary-button,.panel .secondary-button{max-width:100%;white-space:normal;text-align:center}}
 
 .panel details p{overflow-wrap:anywhere}.checkin select{max-width:100%;padding:10px;border:1px solid #cad4e0;border-radius:12px;background:#fafbfd}.panel button:focus-visible,.panel select:focus-visible,.sidebar button:focus-visible{outline:2px solid #435d7b;outline-offset:3px}
+/* Progressive disclosure keeps explanations available without crowding actions. */
+.explanation{margin:12px 0;color:var(--text-muted,#617086);font-size:.9rem}
+.explanation>summary{cursor:pointer;list-style:none;display:inline-block;padding:7px 0;color:#425f7b;font-weight:500}
+.explanation>summary::-webkit-details-marker{display:none}
+.explanation>summary:focus-visible{outline:2px solid #627fa0;outline-offset:4px;border-radius:4px}
+.explanation .when-open{display:none}.explanation[open]>.explanation-content{padding:4px 0 10px;line-height:1.65}
+.explanation[open]>summary .when-closed{display:none}.explanation[open]>summary .when-open{display:inline}
+.explanation-label{font-weight:400}.measurement-help{margin:12px 0}.measurement-help .explanation{margin:2px 0 10px}
