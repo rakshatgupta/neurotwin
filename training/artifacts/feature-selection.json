@@ -1,0 +1,318 @@
+{
+  "stage": "exploratory-feature-selection",
+  "source_doi": "10.48420/20212265",
+  "audit": {
+    "raw_rows": 3106,
+    "pvt_rows": 1305,
+    "invalid_pvt_rows": 0,
+    "eligible_examples": 1215,
+    "participants": 69,
+    "observed_sleepiness_range": [
+      1.0,
+      10.0
+    ]
+  },
+  "method": "Five participant-disjoint GroupKFold validation folds; scaler fitted inside each fold; feature set and alpha selected by mean validation MAE.",
+  "selected": {
+    "feature_set": "History + context",
+    "features": [
+      "previous_reaction_ms",
+      "recent_reaction_mean_ms",
+      "previous_time_awake",
+      "previous_sleepiness"
+    ],
+    "alpha": 0.1,
+    "fold_mae_ms": [
+      41.18945476498208,
+      36.94024155348022,
+      38.56167491746851,
+      38.68276662222023,
+      35.196622653019176
+    ],
+    "mean_validation_mae_ms": 38.11415210223404
+  },
+  "best_per_set": [
+    {
+      "feature_set": "History only",
+      "features": [
+        "previous_reaction_ms",
+        "recent_reaction_mean_ms"
+      ],
+      "alpha": 0.1,
+      "fold_mae_ms": [
+        40.80527517637447,
+        37.39309523227165,
+        38.96026353343556,
+        38.847486995958,
+        36.01834905356857
+      ],
+      "mean_validation_mae_ms": 38.404893998321654
+    },
+    {
+      "feature_set": "History + context",
+      "features": [
+        "previous_reaction_ms",
+        "recent_reaction_mean_ms",
+        "previous_time_awake",
+        "previous_sleepiness"
+      ],
+      "alpha": 0.1,
+      "fold_mae_ms": [
+        41.18945476498208,
+        36.94024155348022,
+        38.56167491746851,
+        38.68276662222023,
+        35.196622653019176
+      ],
+      "mean_validation_mae_ms": 38.11415210223404
+    },
+    {
+      "feature_set": "History + context + clock",
+      "features": [
+        "previous_reaction_ms",
+        "recent_reaction_mean_ms",
+        "previous_time_awake",
+        "previous_sleepiness",
+        "previous_clock_sin",
+        "previous_clock_cos"
+      ],
+      "alpha": 0.1,
+      "fold_mae_ms": [
+        41.200189382734514,
+        36.94158489005575,
+        38.45931813097193,
+        38.55385945945995,
+        35.659762791695506
+      ],
+      "mean_validation_mae_ms": 38.162942930983526
+    }
+  ],
+  "all_candidates": [
+    {
+      "feature_set": "History only",
+      "features": [
+        "previous_reaction_ms",
+        "recent_reaction_mean_ms"
+      ],
+      "alpha": 0.1,
+      "fold_mae_ms": [
+        40.80527517637447,
+        37.39309523227165,
+        38.96026353343556,
+        38.847486995958,
+        36.01834905356857
+      ],
+      "mean_validation_mae_ms": 38.404893998321654
+    },
+    {
+      "feature_set": "History only",
+      "features": [
+        "previous_reaction_ms",
+        "recent_reaction_mean_ms"
+      ],
+      "alpha": 1.0,
+      "fold_mae_ms": [
+        40.81368283219197,
+        37.404358796573476,
+        38.9417059354053,
+        38.84825754209262,
+        36.03311242810321
+      ],
+      "mean_validation_mae_ms": 38.40822350687331
+    },
+    {
+      "feature_set": "History only",
+      "features": [
+        "previous_reaction_ms",
+        "recent_reaction_mean_ms"
+      ],
+      "alpha": 10.0,
+      "fold_mae_ms": [
+        40.88940360079777,
+        37.50830160202141,
+        38.777750367861934,
+        38.87012492681318,
+        36.18496863900837
+      ],
+      "mean_validation_mae_ms": 38.44610982730053
+    },
+    {
+      "feature_set": "History only",
+      "features": [
+        "previous_reaction_ms",
+        "recent_reaction_mean_ms"
+      ],
+      "alpha": 100.0,
+      "fold_mae_ms": [
+        41.48713165176336,
+        38.400277421164965,
+        38.35553056871452,
+        39.63256675912269,
+        37.4864044839853
+      ],
+      "mean_validation_mae_ms": 39.07238217695017
+    },
+    {
+      "feature_set": "History + context",
+      "features": [
+        "previous_reaction_ms",
+        "recent_reaction_mean_ms",
+        "previous_time_awake",
+        "previous_sleepiness"
+      ],
+      "alpha": 0.1,
+      "fold_mae_ms": [
+        41.18945476498208,
+        36.94024155348022,
+        38.56167491746851,
+        38.68276662222023,
+        35.196622653019176
+      ],
+      "mean_validation_mae_ms": 38.11415210223404
+    },
+    {
+      "feature_set": "History + context",
+      "features": [
+        "previous_reaction_ms",
+        "recent_reaction_mean_ms",
+        "previous_time_awake",
+        "previous_sleepiness"
+      ],
+      "alpha": 1.0,
+      "fold_mae_ms": [
+        41.19995174602021,
+        36.953098803355914,
+        38.544986191223735,
+        38.68437862557778,
+        35.20789714851007
+      ],
+      "mean_validation_mae_ms": 38.11806250293754
+    },
+    {
+      "feature_set": "History + context",
+      "features": [
+        "previous_reaction_ms",
+        "recent_reaction_mean_ms",
+        "previous_time_awake",
+        "previous_sleepiness"
+      ],
+      "alpha": 10.0,
+      "fold_mae_ms": [
+        41.29714686863243,
+        37.091850334932744,
+        38.415413027713015,
+        38.706827454834055,
+        35.34202274917519
+      ],
+      "mean_validation_mae_ms": 38.17065208705748
+    },
+    {
+      "feature_set": "History + context",
+      "features": [
+        "previous_reaction_ms",
+        "recent_reaction_mean_ms",
+        "previous_time_awake",
+        "previous_sleepiness"
+      ],
+      "alpha": 100.0,
+      "fold_mae_ms": [
+        41.939583444551914,
+        37.982453489003845,
+        37.939145904625676,
+        39.42921905012667,
+        36.65546913953921
+      ],
+      "mean_validation_mae_ms": 38.789174205569466
+    },
+    {
+      "feature_set": "History + context + clock",
+      "features": [
+        "previous_reaction_ms",
+        "recent_reaction_mean_ms",
+        "previous_time_awake",
+        "previous_sleepiness",
+        "previous_clock_sin",
+        "previous_clock_cos"
+      ],
+      "alpha": 0.1,
+      "fold_mae_ms": [
+        41.200189382734514,
+        36.94158489005575,
+        38.45931813097193,
+        38.55385945945995,
+        35.659762791695506
+      ],
+      "mean_validation_mae_ms": 38.162942930983526
+    },
+    {
+      "feature_set": "History + context + clock",
+      "features": [
+        "previous_reaction_ms",
+        "recent_reaction_mean_ms",
+        "previous_time_awake",
+        "previous_sleepiness",
+        "previous_clock_sin",
+        "previous_clock_cos"
+      ],
+      "alpha": 1.0,
+      "fold_mae_ms": [
+        41.21007440126414,
+        36.95478829588522,
+        38.44162420932357,
+        38.554461366268704,
+        35.66683948073005
+      ],
+      "mean_validation_mae_ms": 38.16555755069434
+    },
+    {
+      "feature_set": "History + context + clock",
+      "features": [
+        "previous_reaction_ms",
+        "recent_reaction_mean_ms",
+        "previous_time_awake",
+        "previous_sleepiness",
+        "previous_clock_sin",
+        "previous_clock_cos"
+      ],
+      "alpha": 10.0,
+      "fold_mae_ms": [
+        41.30422384672247,
+        37.080228773494504,
+        38.3113917048874,
+        38.58900819898623,
+        35.746383910275874
+      ],
+      "mean_validation_mae_ms": 38.2062472868733
+    },
+    {
+      "feature_set": "History + context + clock",
+      "features": [
+        "previous_reaction_ms",
+        "recent_reaction_mean_ms",
+        "previous_time_awake",
+        "previous_sleepiness",
+        "previous_clock_sin",
+        "previous_clock_cos"
+      ],
+      "alpha": 100.0,
+      "fold_mae_ms": [
+        41.92827504198829,
+        37.990565779506184,
+        37.89474872386356,
+        39.37354750368827,
+        36.88320165053494
+      ],
+      "mean_validation_mae_ms": 38.814067739916254
+    }
+  ],
+  "recent_average_validation_mae_ms": 38.241878659373015,
+  "independent_final_test": false,
+  "changes_deployed_model": false,
+  "limitations": [
+    "Dataset already explored in prior evaluations. These are selection/validation scores, not an untouched final test.",
+    "Fold scores equally weighted; participants are disjoint within each split.",
+    "Prior sessions supply inputs for held-out participants, never fit targets.",
+    "Source modified sleepiness scale is 1\u201310.",
+    "No clinical validation or validation for the NeuroTwin five-trial task."
+  ]
+}

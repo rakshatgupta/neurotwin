@@ -16,6 +16,7 @@ export function statisticalInsight(twin: ReturnType<typeof buildTwin>) {
     lines.push(changes.length ? `Relative changes in the available signals: ${changes.join('; ')}.` : 'None of the eligible signals crosses the implemented relative-change threshold. This is a statistical observation, not a health assessment.');
   }
   if (twin.sleepTrend !== null) lines.push(`The recorded sleep trend is ${twin.sleepTrend.toFixed(3)} hours per calendar day over the available recent history. Co-occurring changes do not establish a cause.`);
+  if(twin.factors.some(f=>!f.fresh))lines.push('Some eligible readings are older than the seven-day display window or future-dated. They remain historical comparisons but are excluded from current combined variation.');
   lines.push('Keep recording under comparable conditions and review changes over time. Cognitive results depend on device and practice; recording levels depend on the microphone and surroundings. This summary cannot diagnose or rule out a medical condition.');
   return lines.join('\n\n');
 }

@@ -14,3 +14,5 @@ skills-lock.json
 !.env.example
 .vercel/
 coverage/
+__pycache__/
+*.pyc
