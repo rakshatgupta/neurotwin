@@ -1,5 +1,7 @@
 # NeuroTwin AI
 
+Read [PROJECT_AUDIT.md](PROJECT_AUDIT.md) for the 18 October 2026 implementation checklist, actual verification results and migration 004 activation steps. This update adds optional sleep patterns, history editing, persistent twin-processing snapshots and source provenance, voice history, cognitive-only insights and signal-specific guidance. Apply migration 004 before deploying this update to the existing cloud database.
+
 Next.js 15, React 19, Tailwind 4, Supabase Auth/Postgres, and optional Groq AI explanations with a built-in statistical fallback.
 
 The landing page keeps the animated head and clickable brain. The account workspace supports:

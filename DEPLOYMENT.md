@@ -1,5 +1,11 @@
 # Deploy the full NeuroTwin application
 
+## Existing installation: October audit update
+
+Before deploying the complete-project-audit changes, open your existing Supabase project → **SQL Editor → New query**. Paste all of `supabase/migrations/004_twin_updates_and_sleep_patterns.sql` and run it, after migrations 001–003. Do not rerun migration 001 on an existing installation. Migration 004 adds optional sleep fields and private saved twin updates; it does not delete existing records. Its deletion-function definition includes snapshots when a user later requests deletion.
+
+Deploy the review branch to Vercel Preview with your existing environment variables, then test editing a check-in, saved twin update history, export and account isolation before merging to production. No additional key or paid service is required for these changes. See `PROJECT_AUDIT.md` for actual verification results and the complete acceptance checklist.
+
 The project now contains server routes. Deploy the source from GitHub to **Vercel**, with **Supabase** for accounts and Postgres. GitHub Pages cannot run these authenticated API routes. The old Pages workflow has been replaced with build/test CI. The previously published Sites URL remains the earlier landing-page/demo version until a full application is deployed elsewhere.
 
 ## 1. Create and prepare Supabase

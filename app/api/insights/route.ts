@@ -11,19 +11,19 @@ export async function POST(request:Request){try{
  const consent=await requireConsent(db,user.id,'ai_consent');
  if(!hasGroqConsent(consent))throw new HttpError('Save the updated Groq consent in Privacy & data first.',403);
  const [c,a,v]=await Promise.all([
-  db.from('checkins').select('on_date,sleep,activity,stress,mood,source').eq('user_id',user.id).order('on_date',{ascending:false}).limit(31),
+  db.from('checkins').select('on_date,sleep,activity,stress,mood,source,bed_time,wake_time,sleep_quality').eq('user_id',user.id).order('on_date',{ascending:false}).limit(31),
   db.from('assessments').select('created_at,reaction_ms,memory_accuracy,false_starts').eq('user_id',user.id).order('created_at',{ascending:false}).limit(31),
   db.from('voices').select('created_at,duration_ms,rms_mean').eq('user_id',user.id).order('created_at',{ascending:false}).limit(31),
  ]);
  if(c.error||a.error||v.error)throw new Error('Database query failed');
- if(!c.data?.length)throw new HttpError('Save at least one daily check-in first.',400);
+ if(!c.data?.length&&!a.data?.length&&!v.data?.length)throw new HttpError('Save at least one check-in, cognitive result or optional voice feature first.',400);
  const twin=buildTwin(c.data,a.data||[],v.data||[]);
  const fallback=(notice:string)=>json({kind:'statistical',content:statisticalInsight(twin),notice});
  if(!process.env.GROQ_API_KEY?.trim())return fallback('Groq is not configured. Your statistical summary works without an API key.');
  const {data:allowed,error:limitError}=await db.rpc('claim_insight');
  if(limitError)throw limitError;
  if(!allowed)return fallback('The app allows 10 AI attempts per UTC day, at least one minute apart. Your statistical summary remains available.');
- const result=await generateGroqInsight({baseline:twin.status,observations:twin.checkinDays,latest:twin.latest,factors:twin.factors,relativeChanges:twin.deviations,sleepTrendHoursPerDay:twin.sleepTrend,method:twin.method},{key:process.env.GROQ_API_KEY,model:process.env.GROQ_MODEL});
+ const result=await generateGroqInsight({baseline:twin.status,observations:twin.checkinDays,cognitiveSessions:twin.assessmentSessions,voiceRecordings:twin.voiceRecordings,latest:twin.latest,factors:twin.factors,relativeChanges:twin.deviations,sleepTrendHoursPerDay:twin.sleepTrend,method:twin.method},{key:process.env.GROQ_API_KEY,model:process.env.GROQ_MODEL});
  if(result.kind==='unavailable')return fallback(result.notice);
  const current=await requireConsent(db,user.id,'ai_consent');
  if(!hasGroqConsent(current))throw new HttpError('Groq consent was withdrawn while this request was running. The explanation was not saved.',403);

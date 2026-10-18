@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 const origin=process.argv[2]||'http://127.0.0.1:3001';
-for(const [path,method] of [['/api/data/','GET'],['/api/data/','POST'],['/api/data/','DELETE'],['/api/insights/','POST'],['/api/export/','GET'],['/api/account/','DELETE']]){
+for(const [path,method] of [['/api/data/','GET'],['/api/data/','POST'],['/api/data/','DELETE'],['/api/insights/','POST'],['/api/export/','GET'],['/api/account/','DELETE'],['/api/predictions/','GET'],['/api/predictions/','POST'],['/api/twin/','GET'],['/api/twin/','POST']]){
  const response=await fetch(origin+path,{method,headers:method==='POST'||method==='DELETE'?{'Content-Type':'application/json'}:{},body:method==='POST'||method==='DELETE'?'{}':undefined});
  assert.equal(response.status,401,`${method} ${path} must reject signed-out access`);
  assert.match(response.headers.get('cache-control')||'',/no-store/,'Private API responses must never be cached');

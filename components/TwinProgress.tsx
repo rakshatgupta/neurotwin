@@ -3,6 +3,7 @@ import {useState} from 'react';
 import type {Dataset} from '../lib/types';
 import {buildTwin,twinHistory,HISTORY_SIGNALS} from '../lib/analytics';
 import {dataReadiness} from '../lib/readiness';
+import {wellnessActions} from '../lib/guidance';
 
 export function DataReadiness({data,now}:{data:Dataset;now:number}){
  const rows=dataReadiness(data,now),twin=buildTwin(data.checkins,data.assessments,data.voices,now);
@@ -16,6 +17,7 @@ export function WellnessGuidance({data,now}:{data:Dataset;now:number}){
  const twin=buildTwin(data.checkins,data.assessments,data.voices,now);
  return <section className="panel mt-6"><h2>Practical next steps</h2>
  <ul className="guidance-list">
+ {wellnessActions(twin).map(action=><li key={action}>{action}</li>)}
  {twin.status==='forming'&&<li>Keep recording on different days. Eight daily entries are needed for the first daily reference comparison.</li>}
  {!twin.freshFactors.length&&<li>No recent signal has enough reference history for the combined summary. Add a check-in or assessment under your usual conditions.</li>}
  {twin.currentDeviations.length>0&&<li>Review the flagged readings and their dates. A statistical flag can reflect sleep, attention, practice, device differences or recording conditions; it does not establish a health problem.</li>}
