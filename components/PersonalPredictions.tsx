@@ -29,7 +29,8 @@ export default function PersonalPredictions({storageConsent}:{storageConsent:boo
    <div className="data-row"><span>Trained-model estimate</span><span>{Number(row.model_prediction_ms).toFixed(1)} ms</span></div>
    <div className="data-row"><span>Recent-average estimate</span><span>{Number(row.baseline_prediction_ms).toFixed(1)} ms</span></div>
    {row.status==='matched'&&row.actual_reaction_ms!==null&&<><div className="data-row"><span>Later measured result</span><span>{Number(row.actual_reaction_ms).toFixed(1)} ms</span></div><div className="data-row"><span>Model / baseline absolute error</span><span>{Math.abs(row.model_prediction_ms-row.actual_reaction_ms).toFixed(1)} / {Math.abs(row.baseline_prediction_ms-row.actual_reaction_ms).toFixed(1)} ms</span></div></>}
-   <p className="panel-sub">Window ends {new Date(row.expires_at).toLocaleString()}. Model: {row.model_version}. Task: {row.protocol_version}.</p>
+   <p className="panel-sub">Window ends {new Date(row.expires_at).toLocaleString()}.</p>
+   <details><summary>Technical details</summary><p className="panel-sub">Model: {row.model_version}. Task: {row.protocol_version}. History cutoff: {new Date(row.history_cutoff).toLocaleString()}.</p></details>
    {status==='pending'&&<p className="panel-sub">Complete and save your next cognitive assessment within the window, then refresh here to compare.</p>}
    {status==='invalidated'&&<p className="panel-sub">A later saved assessment had missing timing or had already started when this forecast was created. It cannot be used as a prospective outcome.</p>}
   </article>})}

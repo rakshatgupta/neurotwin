@@ -1,5 +1,15 @@
 # Synthetic training demonstration
 
+## Workspace improvements and feature selection
+
+The workspace now reconstructs historical reference/deviation timelines with only strictly earlier observations, shows readiness per modality, and excludes readings older than seven days (or future-dated) from current fusion. The seven-day rule is an explicit display policy, not a clinical threshold. Historical charts use loaded retained records, so edits/deletion and loading limits affect reconstruction. Guidance is available without Groq.
+
+`feature_selection.py` compares history-only, history+context, and history+context+clock feature sets at four Ridge penalties using five participant-disjoint validation folds. Run `python training/feature_selection.py PATH_TO_BrighterTimeData.csv --output training/artifacts/feature-selection.json` with numpy, pandas and scikit-learn installed, or use `NeuroTwin_Feature_Selection.ipynb` in Colab. Source: Didikoglu and colleagues, DOI 10.48420/20212265, CC BY 4.0. Original data remain outside the repository.
+
+The executed experiment selected history+context, alpha 0.1, with mean validation MAE 38.114152 ms versus recent-average 38.241879 ms. These are exploratory selection scores on previously explored data, not independent final-test results. No deployment model was changed. The earlier ten-split findings remain reported separately. Selected candidates still require untouched-data evaluation and browser-task transfer evaluation.
+
+Synthetic demonstrations remain in source/notebooks for development but are no longer exposed in normal workspace navigation. Research findings are under About the research. Legacy local-demo cleanup was removed from the UI; existing browser storage was not automatically deleted.
+
 ## Real-data research experiment
 
 `train_brighter_time.py` and `NeuroTwin_BrighterTime_RealData.ipynb` implement a separate real-data Ridge experiment (source DOI 10.48420/20212265, CC BY 4.0, Didikoglu and colleagues). The owner's exported artifact and repeated-evaluation CSV are retained. `artifacts/brighter-time-evaluation.json` aggregates the ten CSV rows, with each split weighted equally, for the workspace's Research evaluation tab.
