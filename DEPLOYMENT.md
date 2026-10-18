@@ -1,5 +1,9 @@
 # Deploy the full NeuroTwin application
 
+## Feature-list completion: optional daily steps
+
+For `codex/feature-list-completion`, apply `supabase/migrations/005_optional_daily_steps.sql` in Supabase SQL Editor after 001–004 **before deploying this code**. It adds a nullable whole-number step count; existing minutes are never converted into steps. No new key or paid service is needed. Test the Preview as described in `FEATURE_LIST_AUDIT.md` before merging. Existing installations should run only the new migration, not rerun 001.
+
 ## Existing installation: October audit update
 
 Before deploying the complete-project-audit changes, open your existing Supabase project → **SQL Editor → New query**. Paste all of `supabase/migrations/004_twin_updates_and_sleep_patterns.sql` and run it, after migrations 001–003. Do not rerun migration 001 on an existing installation. Migration 004 adds optional sleep fields and private saved twin updates; it does not delete existing records. Its deletion-function definition includes snapshots when a user later requests deletion.

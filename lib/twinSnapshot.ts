@@ -1,7 +1,7 @@
 import {createHash} from 'node:crypto';
 import {buildTwin,twinHistory} from './analytics';
 import type {Checkin,Assessment,Voice} from './types';
-export const TWIN_ALGORITHM_VERSION='rolling-mad-v2';
+export const TWIN_ALGORITHM_VERSION='rolling-mad-v3-optional-steps';
 export function twinSnapshot(checkins:Checkin[],assessments:Assessment[],voices:Voice[],now=Date.now()) {
  const c=[...checkins].sort((a,b)=>a.on_date.localeCompare(b.on_date));
  const a=[...assessments].sort((a,b)=>a.created_at.localeCompare(b.created_at));

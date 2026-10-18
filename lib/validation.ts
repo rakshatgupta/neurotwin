@@ -16,6 +16,7 @@ export function checkin(input:unknown):Checkin {
   const result:Checkin={on_date:date,sleep:number(v.sleep,0,24,'Sleep'),activity:number(v.activity,0,1440,'Activity'),stress:number(v.stress,0,10,'Stress'),mood:v.mood as string,source:v.source==='csv'?'csv':'manual'};
   for(const key of ['bed_time','wake_time'] as const)if(key in v){const value=v[key];if(value!==null&&(typeof value!=='string'||!/^([01]\d|2[0-3]):[0-5]\d$/.test(value)))throw new InputError('Use a local clock time in HH:MM format.');result[key]=value as string|null;}
   if('sleep_quality' in v){if(v.sleep_quality===null)result.sleep_quality=null;else{const quality=number(v.sleep_quality,1,5,'Sleep quality');if(!Number.isInteger(quality))throw new InputError('Sleep quality must be an integer.');result.sleep_quality=quality;}}
+  if('steps' in v){if(v.steps===null)result.steps=null;else{const steps=number(v.steps,0,200000,'Steps');if(!Number.isInteger(steps))throw new InputError('Steps must be a whole number.');result.steps=steps;}}
   return result;
 }
 export function assessment(input:unknown) {
@@ -38,7 +39,8 @@ export function csv(text:string) {
   if(text.length>100000)throw new InputError('CSV is too large (maximum 100 KB).');
   const lines=text.replace(/^\uFEFF/,'').trim().split(/\r?\n/);
   if(lines.length<2||lines.length>366)throw new InputError('Import 1–365 daily rows.');
-  if(lines.shift()?.trim()!=='date,sleep,activity,stress,mood')throw new InputError('Use the header: date,sleep,activity,stress,mood');
+  const header=lines.shift()?.trim(),withSteps=header==='date,sleep,activity,stress,mood,steps';
+  if(header!=='date,sleep,activity,stress,mood'&&!withSteps)throw new InputError('Use the header: date,sleep,activity,stress,mood (optionally add ,steps)');
   const dates=new Set<string>();
-  return lines.map((line,i)=>{const values=line.split(',').map(s=>s.trim());if(values.length!==5||values.slice(1,4).some(s=>!s))throw new InputError(`Invalid row ${i+2}.`);const r=checkin({on_date:values[0],sleep:Number(values[1]),activity:Number(values[2]),stress:Number(values[3]),mood:values[4],source:'csv'});if(dates.has(r.on_date))throw new InputError('Each date must appear only once.');dates.add(r.on_date);return r;});
+  return lines.map((line,i)=>{const values=line.split(',').map(s=>s.trim());if(values.length!==(withSteps?6:5)||values.slice(1,4).some(s=>!s))throw new InputError(`Invalid row ${i+2}.`);if(withSteps&&values[5]&&!/^\d+$/.test(values[5]))throw new InputError(`Steps in row ${i+2} must be a whole count.`);const r=checkin({on_date:values[0],sleep:Number(values[1]),activity:Number(values[2]),stress:Number(values[3]),mood:values[4],source:'csv',...(withSteps?{steps:values[5]?Number(values[5]):null}:{})});if(dates.has(r.on_date))throw new InputError('Each date must appear only once.');dates.add(r.on_date);return r;});
 }

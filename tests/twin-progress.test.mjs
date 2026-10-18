@@ -37,11 +37,18 @@ test('stale voice does not inflate a recent daily combined summary',()=>{
 });
 test('readiness never invents context for legacy assessments and identifies stale forecast inputs',()=>{
  const data={checkins:[],assessments:[],voices:[],preferences:{voice_consent:false}};
- assert.equal(dataReadiness(data,now)[3].status,'Optional / off');
+ assert.equal(dataReadiness(data,now).find(row=>row.name==="Voice reference (optional)").status,'Optional / off');
  const base={reaction_ms:300,memory_accuracy:80,false_starts:0};
  data.assessments=Array.from({length:3},(_,i)=>({...base,created_at:`2026-10-18T0${i}:00:00Z`}));
- assert.equal(dataReadiness(data,now)[2].count,0);
+ assert.equal(dataReadiness(data,now).find(row=>row.name==="Personal predictions").count,0);
  data.assessments=data.assessments.map(a=>({...a,protocol_version:'neurotwin-five-trial-v1',hours_awake:5,sleepiness_score:3,assessment_started_at:a.created_at,utc_offset_minutes:330}));
- assert.equal(dataReadiness(data,now)[2].status,'Ready to request');
- assert.equal(dataReadiness(data,now+3*86400000)[2].status,'More context needed');
+ assert.equal(dataReadiness(data,now).find(row=>row.name==="Personal predictions").status,'Ready to request');
+ assert.equal(dataReadiness(data,now+3*86400000).find(row=>row.name==="Personal predictions").status,'More context needed');
+});
+test('readiness agrees with strictly earlier history and optional step availability',()=>{
+ const data={checkins:[],assessments:Array.from({length:4},()=>({created_at:'2026-10-18T09:00:00Z',reaction_ms:300,memory_accuracy:80,false_starts:0})),voices:Array.from({length:4},()=>({created_at:'2026-10-18T09:00:00Z',duration_ms:5000,rms_mean:.1})),preferences:{voice_consent:true}};
+ const ready=dataReadiness(data,now);
+ assert.equal(ready.find(row=>row.name==='Cognitive baseline').status,'Forming');
+ assert.equal(ready.find(row=>row.name==='Voice reference (optional)').status,'Forming');
+ assert.equal(ready.find(row=>row.name==='Steps reference (optional)').status,'Optional / not recorded');
 });
