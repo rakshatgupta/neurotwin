@@ -29,6 +29,20 @@ Choose and document a fixed feature schema: e.g. sleep hours; activity minutes; 
 
 ## Activation and deployment
 
+### Offline personal inference (now implemented)
+
+After training a real research artifact, prepare a local JSON file with `support` (an array of earlier labelled records in the training schema) and `query` (one current complete feature record with no target or target timestamp). All rows must belong to one pseudonymous participant. Every support outcome must precede the query window start. Keep feature order and measurement units identical to training; dimension validation cannot detect swapped units or feature meanings.
+
+Run:
+
+```powershell
+.\.venv-research\Scripts\python.exe training\experimental_inference.py C:\private-data\experimental-artifact.json C:\private-data\personal-input.json
+```
+
+The command validates artifact dimensions, finite parameters, positive scaler spreads, input timing, participant ownership within the submitted file and complete modalities. It adapts on the most recent required support records and returns a later reaction-time estimate plus a support-average comparator. It rejects observed query outcomes and inputs beyond six training standard deviations. That six-unit guard is an engineering check, not calibrated uncertainty. This local file check does not authenticate ownership of real-world data; the future web endpoint must retrieve records from the authenticated account itself.
+
+No raw records, participant identifiers or audio are returned. No account data is uploaded or changed. Run all research tests using `.\.venv-research\Scripts\python.exe -m unittest discover -s training -p "test_experimental*.py"`. Synthetic tests prove execution and rejection behavior only.
+
 The lab UI deploys with the normal Next.js build. No migration, additional secret, paid API or Python service is needed for it. The training artifacts are deliberately not connected to the production predictor. The lab accurately displays that state; the existing Ridge predictions continue to work.
 
 After obtaining genuine aligned data: audit provenance and consent; freeze feature schema and pairing rules; train and evaluate; independently review failure modes, subgroup errors, uncertainty and minimum support; then implement an authenticated, consent-controlled inference endpoint with artifact/schema version validation, personal support fitting, RLS-backed result history and export/deletion coverage. Test prospectively before enabling it for users. This integration remains future work pending an appropriate validated artifact; uploading an arbitrary artifact cannot enable it.
