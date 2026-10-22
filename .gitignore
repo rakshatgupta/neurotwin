@@ -16,3 +16,4 @@ skills-lock.json
 coverage/
 __pycache__/
 *.pyc
+.venv-research/
