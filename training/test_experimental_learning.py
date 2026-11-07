@@ -80,5 +80,13 @@ class LearningTests(unittest.TestCase):
         self.assertTrue(np.isfinite(artifact['few_shot_test']['participant_mean_mae_ms']))
         self.assertNotIn('participant', artifact['encoders'])
 
+    def test_unlabelled_windows_train_encoders_without_a_prediction_head(self):
+        rows = [{k: v for k, v in row.items() if not k.startswith('target_')} for row in fixture()]
+        artifact = run(rows, epochs=3, encoders_only=True)
+        self.assertEqual(artifact['kind'], 'encoders_only')
+        self.assertEqual(len(artifact['contrastive_test']['retrieval']), 3)
+        self.assertNotIn('meta_weights_seconds', artifact)
+        self.assertFalse(artifact['live_activation'])
+
 
 if __name__ == '__main__': unittest.main()

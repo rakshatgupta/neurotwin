@@ -29,6 +29,16 @@ Choose and document a fixed feature schema: e.g. sleep hours; activity minutes; 
 
 ## Activation and deployment
 
+### Contrastive pretraining without labels
+
+Add `--encoders-only` to the training command to fit shared sleep/activity/acoustic encoders without reaction targets. It reports held-out retrieval and exports no reaction head; the inference command rejects these artifacts. TILES-2018 is a candidate after access approval and an audit of same-person windows, missing data and feature compatibility. The website's microphone summaries are not interchangeable with TILES acoustic descriptors. No TILES data or weights are included.
+
+### Real-data few-shot benchmark
+
+Download `BrighterTimeData.csv` from [Didikoglu and colleagues, CC BY 4.0](https://doi.org/10.48420/20212265.v1). Run `python training/evaluate_pvt_few_shot.py PATH_TO_BrighterTimeData.csv training/artifacts/brighter-time-few-shot.json` with NumPy, pandas and scikit-learn installed. Only aggregate results are versioned. Training transforms are fitted on training participants; validation selects the checkpoint; test participants contribute only earlier labelled support to adaptation. The same later query sessions are evaluated for one, three and five support records.
+
+This benchmark uses real reaction-time history and context, with no voice/activity fusion. Its best mean adapted error was 53.51 ms versus 44.08 ms for the recent-average comparator. This result does not justify deploying the model. Ten overlapping splits of a previously explored dataset are not independent clinical or browser-task validation.
+
 ### Offline personal inference (now implemented)
 
 After training a real research artifact, prepare a local JSON file with `support` (an array of earlier labelled records in the training schema) and `query` (one current complete feature record with no target or target timestamp). All rows must belong to one pseudonymous participant. Every support outcome must precede the query window start. Keep feature order and measurement units identical to training; dimension validation cannot detect swapped units or feature meanings.

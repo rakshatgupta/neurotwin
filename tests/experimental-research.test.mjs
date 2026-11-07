@@ -11,7 +11,7 @@ function render(factors){
   if(cache.has(file))return cache.get(file);
   const exports={};cache.set(file,exports);
   const code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.CommonJS,esModuleInterop:true}}).outputText;
-  vm.runInNewContext(code,{exports,require:name=>{if(!name.startsWith('.'))return require(name);const base=path.resolve(path.dirname(file),name);return load([base+'.tsx',base+'.ts'].find(existsSync));}});
+  vm.runInNewContext(code,{exports,require:name=>{if(!name.startsWith('.'))return require(name);const base=path.resolve(path.dirname(file),name);if(name.endsWith('.json'))return JSON.parse(readFileSync(base,'utf8'));return load([base+'.tsx',base+'.ts'].find(existsSync));}});
   return exports;
  }
  const Component=load(path.resolve('components/ExperimentalResearch.tsx')).default;
@@ -22,7 +22,9 @@ test('research UI exposes actual model projection without implying trained live 
  assert.match(html,/5.75|5.76/);assert.match(html,/hours/);
  assert.match(html,/no population artifact activated/);assert.match(html,/not a recommended change/);
  assert.match(html,/aria-expanded="false"/);
+ assert.match(html,/<svg[^>]+aria-label="Sleep: observed point outside/);
+ assert.match(html,/44\.08/);
 });
 test('no fresh eligible data produces no fabricated counterfactual',()=>{
- const html=render([]);assert.match(html,/No fresh, flagged signals/);assert.ok(!html.includes('<tbody>'));
+ const html=render([]);assert.match(html,/No fresh, flagged signals/);assert.ok(!html.includes('<svg'));
 });

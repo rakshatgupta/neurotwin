@@ -9,6 +9,8 @@ from experimental_learning import MODALITIES, encode, adapt, timestamp, validate
 
 
 def artifact_arrays(artifact):
+    if artifact.get('kind') == 'encoders_only':
+        raise ValueError('This artifact has no trained reaction-time head')
     if artifact.get('schema_version') != 1 or artifact.get('status') != 'offline_research_only':
         raise ValueError('Unsupported research artifact')
     weights, scalers = {}, {}

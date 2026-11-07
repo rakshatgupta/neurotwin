@@ -200,24 +200,27 @@ def train_meta(train, validation, epochs):
     return best
 
 
-def run(rows, seed=42, epochs=100, support=3):
+def run(rows, seed=42, epochs=100, support=3, encoders_only=False):
     if epochs < 1 or support < 1:
         raise ValueError('Epochs and support must be positive')
     dims = validate(rows)
     train, val, test = split_participants(rows, seed)
     weights, scalers = train_encoders(train, val, dims, np.random.default_rng(seed), epochs)
-    training_tasks, validation_tasks, test_tasks = [tasks(r, weights, scalers, support) for r in (train, val, test)]
-    theta = train_meta(training_tasks, validation_tasks, epochs)
-    return {'schema_version': 1, 'status': 'offline_research_only', 'clinical_validation': False, 'live_activation': False,
-            'seed': seed, 'epochs': epochs, 'support_records': support,
+    artifact = {'schema_version': 1, 'status': 'offline_research_only', 'clinical_validation': False, 'live_activation': False,
+            'kind': 'encoders_only' if encoders_only else 'encoders_and_reaction_head',
+            'seed': seed, 'epochs': epochs,
             'participant_split_counts': [len({r['participant'] for r in group}) for group in (train, val, test)],
             'encoder_architecture': 'two-layer tanh MLP, normalized 8D projection; symmetric InfoNCE',
-            'meta_algorithm': 'first-order MAML linear reaction-time head on frozen mean embeddings',
             'encoders': {k: [a.tolist() for a in v] for k, v in weights.items()},
             'scalers': {k: [a.tolist() for a in v] for k, v in scalers.items()},
-            'meta_weights_seconds': theta.tolist(), 'contrastive_test': retrieval(test, weights, scalers),
-            'few_shot_test': evaluate_meta(theta, test_tasks),
+            'contrastive_test': retrieval(test, weights, scalers),
             'limits': ['Not a disease or healthy-baseline model', 'No causal intervention effects learned', 'Support size is records, not guaranteed days', 'Independent external and prospective evaluation required']}
+    if not encoders_only:
+        training_tasks, validation_tasks, test_tasks = [tasks(r, weights, scalers, support) for r in (train, val, test)]
+        theta = train_meta(training_tasks, validation_tasks, epochs)
+        artifact.update(support_records=support, meta_algorithm='first-order MAML linear reaction-time head on frozen mean embeddings',
+                        meta_weights_seconds=theta.tolist(), few_shot_test=evaluate_meta(theta, test_tasks))
+    return artifact
 
 
 if __name__ == '__main__':
@@ -225,9 +228,10 @@ if __name__ == '__main__':
     parser.add_argument('input', type=Path); parser.add_argument('output', type=Path)
     parser.add_argument('--seed', type=int, default=42); parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--support', type=int, default=3)
+    parser.add_argument('--encoders-only', action='store_true', help='Pretrain without any reaction-time targets')
     args = parser.parse_args()
     if args.input.resolve() == args.output.resolve():
         raise ValueError('Output must differ from input')
-    output = run([json.loads(line) for line in args.input.read_text(encoding='utf-8').splitlines() if line.strip()], args.seed, args.epochs, args.support)
+    output = run([json.loads(line) for line in args.input.read_text(encoding='utf-8').splitlines() if line.strip()], args.seed, args.epochs, args.support, args.encoders_only)
     args.output.write_text(json.dumps(output, indent=2, allow_nan=False), encoding='utf-8')
-    print(json.dumps({k: output[k] for k in ('status', 'participant_split_counts', 'contrastive_test', 'few_shot_test')}, indent=2))
+    print(json.dumps({k: output[k] for k in ('status', 'kind', 'participant_split_counts', 'contrastive_test', 'few_shot_test') if k in output}, indent=2))
