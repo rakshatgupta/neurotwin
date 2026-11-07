@@ -29,6 +29,30 @@ Choose and document a fixed feature schema: e.g. sleep hours; activity minutes; 
 
 ## Activation and deployment
 
+### Contrastive pretraining without labels
+
+Add `--encoders-only` to the training command to fit shared sleep/activity/acoustic encoders without reaction targets. It reports held-out retrieval and exports no reaction head; the inference command rejects these artifacts. TILES-2018 is a candidate after access approval and an audit of same-person windows, missing data and feature compatibility. The website's microphone summaries are not interchangeable with TILES acoustic descriptors. No TILES data or weights are included.
+
+### Real-data few-shot benchmark
+
+Download `BrighterTimeData.csv` from [Didikoglu and colleagues, CC BY 4.0](https://doi.org/10.48420/20212265.v1). Run `python training/evaluate_pvt_few_shot.py PATH_TO_BrighterTimeData.csv training/artifacts/brighter-time-few-shot.json` with NumPy, pandas and scikit-learn installed. Only aggregate results are versioned. Training transforms are fitted on training participants; validation selects the checkpoint; test participants contribute only earlier labelled support to adaptation. The same later query sessions are evaluated for one, three and five support records.
+
+This benchmark uses real reaction-time history and context, with no voice/activity fusion. Its best mean adapted error was 53.51 ms versus 44.08 ms for the recent-average comparator. This result does not justify deploying the model. Ten overlapping splits of a previously explored dataset are not independent clinical or browser-task validation.
+
+### Offline personal inference (now implemented)
+
+After training a real research artifact, prepare a local JSON file with `support` (an array of earlier labelled records in the training schema) and `query` (one current complete feature record with no target or target timestamp). All rows must belong to one pseudonymous participant. Every support outcome must precede the query window start. Keep feature order and measurement units identical to training; dimension validation cannot detect swapped units or feature meanings.
+
+Run:
+
+```powershell
+.\.venv-research\Scripts\python.exe training\experimental_inference.py C:\private-data\experimental-artifact.json C:\private-data\personal-input.json
+```
+
+The command validates artifact dimensions, finite parameters, positive scaler spreads, input timing, participant ownership within the submitted file and complete modalities. It adapts on the most recent required support records and returns a later reaction-time estimate plus a support-average comparator. It rejects observed query outcomes and inputs beyond six training standard deviations. That six-unit guard is an engineering check, not calibrated uncertainty. This local file check does not authenticate ownership of real-world data; the future web endpoint must retrieve records from the authenticated account itself.
+
+No raw records, participant identifiers or audio are returned. No account data is uploaded or changed. Run all research tests using `.\.venv-research\Scripts\python.exe -m unittest discover -s training -p "test_experimental*.py"`. Synthetic tests prove execution and rejection behavior only.
+
 The lab UI deploys with the normal Next.js build. No migration, additional secret, paid API or Python service is needed for it. The training artifacts are deliberately not connected to the production predictor. The lab accurately displays that state; the existing Ridge predictions continue to work.
 
 After obtaining genuine aligned data: audit provenance and consent; freeze feature schema and pairing rules; train and evaluate; independently review failure modes, subgroup errors, uncertainty and minimum support; then implement an authenticated, consent-controlled inference endpoint with artifact/schema version validation, personal support fitting, RLS-backed result history and export/deletion coverage. Test prospectively before enabling it for users. This integration remains future work pending an appropriate validated artifact; uploading an arbitrary artifact cannot enable it.
